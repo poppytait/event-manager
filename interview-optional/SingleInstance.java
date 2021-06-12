@@ -10,16 +10,26 @@ package com.strands.spf;
  */
 public class SingleInstance {
 
-  public SingleInstance() {
-    // TODO Auto-generated constructor stub
+  private static SingleInstance instance = null;
+
+  private SingleInstance() {
+
   }
 
-  /**
-   * @param args
-   */
+  public static SingleInstance getInstance() {
+    if (instance == null) {
+      createInstance();
+    }
+    return instance;
+  }
+
+  private synchronized static void createInstance() {
+    if (instance == null) {
+      instance = new SingleInstance();
+    }
+  }
+
   public static void main(String[] args) {
-    // TODO Auto-generated method stub
-
+    SingleInstance singleInstance = getInstance();
   }
-
 }
