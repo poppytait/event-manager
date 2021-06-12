@@ -37,21 +37,24 @@ public class DefaultEventManagerTest
     }
 
     @Test
-    public void testListenerWithoutMatchingPublishedEventClass()
-    {
-        EventListenerMock eventListenerMock = new EventListenerMock(new Class[]{SimpleEvent.class});
-        eventManager.registerListener("some.key", eventListenerMock);
-        eventManager.publishEvent(new SubEvent(this));
-        assertFalse(eventListenerMock.isCalled());
-    }
-
-    @Test
     public void testRegisterAllEventListener()
     {
         EventListenerMock eventListenerMock = new EventListenerMock(new Class[]{});
         eventManager.registerListener("some.key", eventListenerMock);
         eventManager.publishEvent(new SimpleEvent(this));
         eventManager.publishEvent(new SubEvent(this));
+        eventManager.publishEvent(new CreationEvent(this));
+        assertTrue(eventListenerMock.isCalled());
+        assertEquals(3, eventListenerMock.getCalledCount());
+    }
+
+    @Test
+    public void testRegisterParentListener()
+    {
+        EventListenerMock eventListenerMock = new EventListenerMock(new Class[]{InterviewEvent.class});
+        eventManager.registerListener("some.key", eventListenerMock);
+        eventManager.publishEvent(new SubEvent(this));
+        eventManager.publishEvent(new SimpleEvent(this));
         eventManager.publishEvent(new CreationEvent(this));
         assertTrue(eventListenerMock.isCalled());
         assertEquals(3, eventListenerMock.getCalledCount());

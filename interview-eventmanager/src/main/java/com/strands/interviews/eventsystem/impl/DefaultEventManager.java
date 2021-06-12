@@ -51,13 +51,24 @@ public class DefaultEventManager implements EventManager
         if (listeners.containsKey(listenerKey))
             unregisterListener(listenerKey);
 
-        Class[] classes = listener.getHandledEventClasses();
+        Class[] handledEventClasses = listener.getHandledEventClasses();
 
-        if (classes.length == 0)
-            classes = allEventClasses;
+        Set eventClassSet = new HashSet<Class>();
 
-        for (int i = 0; i < classes.length; i++)
-            addToListenerList(classes[i], listener);
+        Arrays.asList(handledEventClasses).forEach(handledEventClass -> {
+            Arrays.asList(allEventClasses).forEach(eventClass -> {
+               if (handledEventClass.isAssignableFrom(eventClass))
+                    eventClassSet.add(eventClass);
+            });
+        });
+
+        handledEventClasses = (Class[]) eventClassSet.toArray(new Class[0]);
+
+        if (handledEventClasses.length == 0)
+            handledEventClasses = allEventClasses;
+
+        for (int i = 0; i < handledEventClasses.length; i++)
+            addToListenerList(handledEventClasses[i], listener);
 
         listeners.put(listenerKey, listener);
     }
